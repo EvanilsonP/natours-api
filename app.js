@@ -1,8 +1,10 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 const app = express();
 const port = 3000;
 
+app.use(morgan('dev'));
 // It enables the visualiation of the content created on postman in the terminal, if using console.log(req.body) (POST)
 app.use(express.json());
 // Defining a middleware
