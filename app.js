@@ -5,20 +5,30 @@ const port = 3000;
 
 // It enables the visualiation of the content created on postman in the terminal, if using console.log(req.body) (POST)
 app.use(express.json());
+// Defining a middleware
+app.use((req, res, next) => {
+    console.log('Hello from the middleware!');
+    next();
+});
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+});
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
 const getAllTours = (req, res) => {
+    console.log(req.requestTime);
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: tours.length,
         data: {
             tours: tours
         }
     })
 }
-
-app.get('/api/v1/tours', getAllTours);
 
 const getTour = (req, res) => {
     console.log(req.params);
@@ -41,8 +51,6 @@ const getTour = (req, res) => {
     });
 }
 
-app.get('/api/v1/tours/:id', getTour);
-
 const postTour = (req, res) => {
     // console.log(req.body);
     const newId = tours[tours.length - 1 ].id + 1;
@@ -57,8 +65,6 @@ const postTour = (req, res) => {
         })
     });
 }
-
-app.post('/api/v1/tours', postTour);
 
 const attTour = (req, res) => {
     if(req.params.id * 1 > tours.length) { // or if(!tour)
@@ -76,8 +82,6 @@ const attTour = (req, res) => {
     });
 }
 
-app.patch('/api/v1/tour/:id', attTour);
-
 const deleteTour = (req, res) => {
     if(req.params.id * 1 > tours.length) { // or if(!tour)
         res.status(404).json({
@@ -94,7 +98,12 @@ const deleteTour = (req, res) => {
     });
 }
 
-app.delete('/api/v1/tour/:id', deleteTour);
+
+// app.get('/api/v1/tours', getAllTours);
+// app.get('/api/v1/tours/:id', getTour);
+// app.post('/api/v1/tours', postTour);
+// app.patch('/api/v1/tour/:id', attTour);
+// app.delete('/api/v1/tour/:id', deleteTour);
 
 app.route('/api/v1/tours').get(getAllTours).post(postTour);
 app.route('/api/v1/tours/:id').get(getTour).patch(attTour).delete(deleteTour);
