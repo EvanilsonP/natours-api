@@ -142,9 +142,16 @@ const deleteUser = (req, res) => {
 // app.patch('/api/v1/tour/:id', attTour);
 // app.delete('/api/v1/tour/:id', deleteTour);
 
-app.route('/api/v1/tours').get(getAllTours).post(postTour);
-app.route('/api/v1/tours/:id').get(getTour).patch(attTour).delete(deleteTour);
-app.route('/api/v1/users').get(getAllUsers).post(createdUser);
-app.route('/api/v1/users/:id').get(getUser).patch(updateUser).delete(deleteUser);
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(postTour);
+tourRouter.route('/:id').get(getTour).patch(attTour).delete(deleteTour);
+
+userRouter.route('/').get(getAllUsers).post(createdUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
 app.listen(port, () => console.log(`App running on port ${port}`));
